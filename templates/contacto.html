@@ -1,0 +1,11 @@
+{% from "_macroform.html" import render_field  %}
+
+<form method=POST>
+    <dl>
+        {{ render_field(form.name) }}
+        {{ render_field(form.email) }}
+        {{ render_field(form.text) }}
+    </dl>
+
+
+</form>
