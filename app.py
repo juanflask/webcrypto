@@ -1,6 +1,5 @@
-from flask import Flask, render_template, request
+from flask import Flask, render_template, request, url_for, redirect
 from forms import formulario
-
 
 app = Flask(__name__)
 
@@ -17,9 +16,10 @@ def contacto():
 		email= form.email.data
 		text=  form.text.data
 		print(nombre + email + text)
+		return redirect(url_for('index'))
 	
 	else:
-		return render_template("contacto.html")
+		return render_template("contacto.html", form=form)
 
 
 if __name__ == '__main__':
