@@ -1,0 +1,12 @@
+{% extends "base.html" %}
+
+{% block content %}
+<h1>Mensajes recibidos del formulario</h1>
+
+{% for articulo in articulos %}
+    <h2>{{ articulo['titulo']}}</h2>
+    <p>{{ articulo['fecha']}}</p>
+    <p>{{ articulo['articulo']}}</p>
+{% endfor %}
+
+{% endblock %}
