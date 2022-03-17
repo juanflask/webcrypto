@@ -7,6 +7,9 @@
     <h2>{{ articulo['titulo']}}</h2>
     <p>{{ articulo['fecha']}}</p>
     <p>{{ articulo['articulo']}}</p>
+    <a href="{{ url_for('edit_post', id=articulo['id'] }}">Editar artículo</a>
+
 {% endfor %}
 
 {% endblock %}
+
