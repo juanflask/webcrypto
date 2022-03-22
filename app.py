@@ -69,10 +69,19 @@ def articulos():
 	conn.close()
 	return render_template('articulos.html', articulos=articulos)
 
-@app.route("/<int:id>/edit", methods=["GET", "POST"])
-def editar_post():
+@app.route("/articulos_admin")
+def articulos_admin():
 	conn = get_db_connection()
-	articulo = conn.execute('SELECT * FROM articulos WHERE id=?', (id)).fetchone()
+	articulos = conn.execute('SELECT * FROM articulos ORDER BY fecha DESC').fetchall()
+	conn.close()
+	return render_template('articulos_admin.html', articulos=articulos)
+
+
+
+@app.route("/<int:id>/edit", methods=["GET", "POST"])
+def edit_post(id):
+	conn = get_db_connection()
+	articulo = conn.execute('SELECT * FROM articulos WHERE id=?', (id,)).fetchone()
 	conn.close()
 	if articulo is None:
 		abort(404)
@@ -91,7 +100,27 @@ def editar_post():
 
 		return redirect(url_for('articulos'))
 
-	return render_template('edit_post.html')
+	form.titulo.data = articulo["titulo"]
+	form.articulo.data = articulo["articulo"]
+
+
+	return render_template('edit_post.html', form=form)
+
+@app.route("/<int:id>/borrar", methods=["GET", "POST"])
+def borrar_articulo(id):
+	conn = get_db_connection()
+	articulo = conn.execute('SELECT * FROM articulos WHERE id=?', (id,)).fetchone()
+	conn.commit()
+	conn.close()
+	
+	if request.method == "POST":
+		conn = get_db_connection()
+		articulo = conn.execute('DELETE FROM articulos WHERE id=?', (id,))
+		conn.commit()
+		conn.close()
+
+
+	return redirect(url_for('articulos'))
 
 
 if __name__ == '__main__':
