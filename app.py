@@ -1,6 +1,6 @@
 import sqlite3
 from flask import Flask, render_template, request, url_for, redirect, abort
-from forms import formulario, form_crea_articulos
+from forms import formulario, form_crea_articulos, Form_Comentarios
 
 app = Flask(__name__)
 app.config['SECRET_KEY'] = 'dev'
@@ -122,6 +122,21 @@ def borrar_articulo(id):
 
 	return redirect(url_for('articulos'))
 
+@app.route("/<int:id>/articulo")
+def ver_articulo(id):
+
+	form = Form_Comentarios(request.form)
+
+	conn = get_db_connection()
+	articulo = conn.execute('SELECT * FROM articulos WHERE id=?', (id,)).fetchone()
+	conn.commit()
+	conn.close()
+
+	if reques.method == "POST":
+		autor = form.autor.data
+		comentario = form.comentario.data
+
+	return render_template("ver_articulo.html", articulo=articulo, form=form)
 
 if __name__ == '__main__':
 	app.run(debug=True)
