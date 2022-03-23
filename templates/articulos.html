@@ -7,6 +7,7 @@
     <h2>{{ articulo['titulo']}}</h2>
     <p>{{ articulo['fecha']}}</p>
     <p>{{ articulo['articulo']}}</p>
+    <a href="{{ url_for('ver_articulo', id=articulo['id']) }}">Ir a artículo</a>
 {% endfor %}
 
 {% endblock %}

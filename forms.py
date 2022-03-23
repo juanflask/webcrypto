@@ -11,4 +11,9 @@ class form_crea_articulos(Form):
     articulo = TextAreaField("articulo")
     button = SubmitField("Enviar artículo")
 
+class Form_Comentarios(Form):
+    autor = StringField("Autor")
+    comentario = TextAreaField("Comentario")
+    boton = SubmitField("Enviar comentario")
+
 
