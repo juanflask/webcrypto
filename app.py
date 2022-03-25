@@ -132,7 +132,7 @@ def ver_articulo(id):
 	conn.commit()
 	conn.close()
 
-	if reques.method == "POST":
+	if request.method == "POST":
 		autor = form.autor.data
 		comentario = form.comentario.data
 
