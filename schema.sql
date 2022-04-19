@@ -14,3 +14,9 @@ CREATE TABLE articulos (
     fecha TIMESTAMP NOT NULL DEFAULT CURRENT_TIMESTAMP,
     articulo TEXT NOT NULL
 );
+
+CREATE TABLE login_usuario (
+    id INTEGER PRIMARY KEY AUTOINCREMENT,
+    usuario TEXT NOT NULL,
+    pass TEXT NOT NULL
+);

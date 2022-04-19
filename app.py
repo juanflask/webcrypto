@@ -1,6 +1,8 @@
 import sqlite3
 from flask import Flask, render_template, request, url_for, redirect, abort
-from forms import formulario, form_crea_articulos, Form_Comentarios
+from forms import formulario, form_crea_articulos, Form_Comentarios, Form_Login
+from flask_wtf import FlaskForm
+from flask_login import LoginManager, UserMixin, login_required, logout_user, login_user, current_user
 
 app = Flask(__name__)
 app.config['SECRET_KEY'] = 'dev'
@@ -9,6 +11,65 @@ def get_db_connection():
 	conn = sqlite3.connect('database.db')
 	conn.row_factory = sqlite3.Row
 	return conn
+
+login_manager = LoginManager(app)
+login_manager.login_view = "login"
+class User(UserMixin):
+    def __init__(self, user_id, email, password):
+         self.id = user_id
+         self.email = email
+         self.password = password
+         self.authenticated = False
+    def is_active(self):
+         return self.is_active()
+    def is_anonymous(self):
+         return False
+    def is_authenticated(self):
+         return self.authenticated
+    def is_active(self):
+         return True
+    def get_id(self):
+         return self.id
+
+@login_manager.user_loader
+def load_user(user_id):
+    conn = sqlite3.connect('database.db')
+    curs = conn.cursor()
+    curs.execute("SELECT * from login where user_id = (?)",[user_id])
+    lu = curs.fetchone()
+    if lu is None:
+        return None
+    else:
+        return User(int(lu[0]), lu[1], lu[2])
+
+
+@app.route("/login", methods=['GET','POST'])
+def login():
+    if current_user.is_authenticated:
+        return redirect(url_for('index'))
+    form = Form_Login()
+
+    if request.method == "POST":
+        print("Solicitud POST")
+        if form.validate_on_submit():
+            print("Formulario validado")
+            conn = sqlite3.connect('database.db')
+            curs = conn.cursor()
+            curs.execute("SELECT * FROM login where email = (?)",    [form.email.data])
+            user = list(curs.fetchone())
+            print(f"Fetchone de usuario: {curs.fetchone()}  ||  Fetchone de usuario convertido a lista: {user}")
+            Us = load_user(user[0])
+            print(f"US: {Us}")
+            if form.email.data == Us.email and form.password.data == Us.password:
+                print("email y password correctos")
+                login_user(Us, remember=form.remember.data)
+                Umail = list({form.email.data})[0].split('@')[0]
+                print('Logged in successfully' + Umail)
+                redirect(url_for('index'))
+            else:
+                flash('Login Unsuccessfull.')
+
+    return render_template('login_form.html', form=form)
 
 @app.route("/")
 def index():

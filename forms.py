@@ -1,4 +1,5 @@
-from wtforms import Form, StringField, EmailField, TextAreaField, SubmitField, DateTimeField, validators
+from wtforms import Form, StringField, EmailField, TextAreaField, SubmitField, DateTimeField, validators, PasswordField
+from flask_wtf import FlaskForm
 
 class formulario(Form):
     name = StringField("name", [validators.Length(min=3, max=25)])
@@ -15,5 +16,10 @@ class Form_Comentarios(Form):
     autor = StringField("Autor")
     comentario = TextAreaField("Comentario")
     boton = SubmitField("Enviar comentario")
+
+class Form_Login(FlaskForm):
+    usuario = StringField("usuario")
+    password = PasswordField("contraseña")
+    boton = SubmitField("Enviar")
 
 
