@@ -60,18 +60,18 @@ def login():
             	flash('No existe usuario')
             	return render_template('login_form.html', form=form)
 				
-            else:	
-               user = list(curs.fetchone())
-               print(f"Fetchone de usuario: {curs.fetchone()}  ||  Fetchone de usuario convertido a lista: {user}")
-               Us = load_user(user[0])
-               print(f"US: {Us}")
-               if form.usuario.data == Us.usuario and form.password.data == Us.password:
+            else:
+            	user = list(curs.fetchone())
+            	print(f"Fetchone de usuario: {curs.fetchone()}  ||  Fetchone de usuario convertido a lista: {user}")
+            	Us = load_user(user[0])
+            	print(f"US: {Us}")
+            	if form.usuario.data == Us.usuario and form.password.data == Us.password:
                   print("email y password correctos")
                   login_user(Us, remember=form.remember.data)
                   Umail = list({form.usuario.data})[0].split('@')[0]
                   print('Logged in successfully' + Umail)
                   redirect(url_for('index'))
-               else:
+            	else:
                    flash('Contraseña incorrecta')
 
     return render_template('login_form.html', form=form)
