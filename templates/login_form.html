@@ -4,15 +4,17 @@
 {% block content %}
 <h1>Login</h1>
 
+
+
 <form method=POST>
     <dl class="formulario">
+        {{ form.csrf_token }}
         {{ render_field(form.usuario) }}
         {{ render_field(form.password) }}
         {{ render_field(form.boton) }}
 
     </dl>
-    
-
+   
 </form>
 
 {% endblock %}

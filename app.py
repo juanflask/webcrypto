@@ -55,15 +55,15 @@ def login():
             print("Formulario validado")
             conn = sqlite3.connect('database.db')
             curs = conn.cursor()
-            curs.execute("SELECT * FROM login where email = (?)",    [form.email.data])
+            curs.execute("SELECT * FROM login_usuario where usuario = (?)",    [form.usuario.data])
             user = list(curs.fetchone())
             print(f"Fetchone de usuario: {curs.fetchone()}  ||  Fetchone de usuario convertido a lista: {user}")
             Us = load_user(user[0])
             print(f"US: {Us}")
-            if form.email.data == Us.email and form.password.data == Us.password:
+            if form.usuario.data == Us.usuario and form.password.data == Us.password:
                 print("email y password correctos")
                 login_user(Us, remember=form.remember.data)
-                Umail = list({form.email.data})[0].split('@')[0]
+                Umail = list({form.usuario.data})[0].split('@')[0]
                 print('Logged in successfully' + Umail)
                 redirect(url_for('index'))
             else:

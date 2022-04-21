@@ -1,22 +1,8 @@
-DROP TABLE IF EXISTS contacto;
-DROP TABLE IF EXISTS articulos;
 
-CREATE TABLE contacto (
-    id INTEGER PRIMARY KEY AUTOINCREMENT,
-    nombre TEXT NOT NULL,
-    email TEXT NOT NULL,
-    mensaje TEXT NOT NULL
-);
 
-CREATE TABLE articulos (
-    id INTEGER PRIMARY KEY AUTOINCREMENT,
-    titulo TEXT NOT NULL,
-    fecha TIMESTAMP NOT NULL DEFAULT CURRENT_TIMESTAMP,
-    articulo TEXT NOT NULL
-);
 
 CREATE TABLE login_usuario (
     id INTEGER PRIMARY KEY AUTOINCREMENT,
     usuario TEXT NOT NULL,
-    pass TEXT NOT NULL
+    password TEXT NOT NULL
 );
