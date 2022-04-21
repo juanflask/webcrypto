@@ -1,5 +1,5 @@
 import sqlite3
-from flask import Flask, render_template, request, url_for, redirect, abort
+from flask import Flask, render_template, request, url_for, redirect, abort, flash
 from forms import formulario, form_crea_articulos, Form_Comentarios, Form_Login
 from flask_wtf import FlaskForm
 from flask_login import LoginManager, UserMixin, login_required, logout_user, login_user, current_user
@@ -15,9 +15,9 @@ def get_db_connection():
 login_manager = LoginManager(app)
 login_manager.login_view = "login"
 class User(UserMixin):
-    def __init__(self, user_id, email, password):
+    def __init__(self, user_id, usuario, password):
          self.id = user_id
-         self.email = email
+         self.usuario = usuario
          self.password = password
          self.authenticated = False
     def is_active(self):
@@ -35,7 +35,7 @@ class User(UserMixin):
 def load_user(user_id):
     conn = sqlite3.connect('database.db')
     curs = conn.cursor()
-    curs.execute("SELECT * from login where user_id = (?)",[user_id])
+    curs.execute("SELECT * from login_usuario where id = (?)",[user_id])
     lu = curs.fetchone()
     if lu is None:
         return None
@@ -56,18 +56,23 @@ def login():
             conn = sqlite3.connect('database.db')
             curs = conn.cursor()
             curs.execute("SELECT * FROM login_usuario where usuario = (?)",    [form.usuario.data])
-            user = list(curs.fetchone())
-            print(f"Fetchone de usuario: {curs.fetchone()}  ||  Fetchone de usuario convertido a lista: {user}")
-            Us = load_user(user[0])
-            print(f"US: {Us}")
-            if form.usuario.data == Us.usuario and form.password.data == Us.password:
-                print("email y password correctos")
-                login_user(Us, remember=form.remember.data)
-                Umail = list({form.usuario.data})[0].split('@')[0]
-                print('Logged in successfully' + Umail)
-                redirect(url_for('index'))
-            else:
-                flash('Login Unsuccessfull.')
+            if curs.fetchone() == None:
+            	flash('No existe usuario')
+            	return render_template('login_form.html', form=form)
+				
+            else:	
+               user = list(curs.fetchone())
+               print(f"Fetchone de usuario: {curs.fetchone()}  ||  Fetchone de usuario convertido a lista: {user}")
+               Us = load_user(user[0])
+               print(f"US: {Us}")
+               if form.usuario.data == Us.usuario and form.password.data == Us.password:
+                  print("email y password correctos")
+                  login_user(Us, remember=form.remember.data)
+                  Umail = list({form.usuario.data})[0].split('@')[0]
+                  print('Logged in successfully' + Umail)
+                  redirect(url_for('index'))
+               else:
+                   flash('Contraseña incorrecta')
 
     return render_template('login_form.html', form=form)
 
