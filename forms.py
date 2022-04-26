@@ -1,4 +1,4 @@
-from wtforms import Form, StringField, EmailField, TextAreaField, SubmitField, DateTimeField, validators, PasswordField
+from wtforms import Form, StringField, EmailField, TextAreaField, SubmitField, DateTimeField, validators, PasswordField, BooleanField
 from flask_wtf import FlaskForm
 
 class formulario(Form):
@@ -18,6 +18,12 @@ class Form_Comentarios(Form):
     boton = SubmitField("Enviar comentario")
 
 class Form_Login(FlaskForm):
+    usuario = StringField("usuario")
+    password = PasswordField("contraseña")
+    remember = BooleanField("Recordarme")
+    boton = SubmitField("Enviar")
+
+class Form_Signup(Form):
     usuario = StringField("usuario")
     password = PasswordField("contraseña")
     boton = SubmitField("Enviar")

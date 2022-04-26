@@ -11,6 +11,7 @@
         {{ form.csrf_token }}
         {{ render_field(form.usuario) }}
         {{ render_field(form.password) }}
+        {{ render_field(form.remember) }}
         {{ render_field(form.boton) }}
 
         {% with messages = get_flashed_messages(with_categories=True)%}

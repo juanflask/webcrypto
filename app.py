@@ -1,6 +1,6 @@
 import sqlite3
 from flask import Flask, render_template, request, url_for, redirect, abort, flash
-from forms import formulario, form_crea_articulos, Form_Comentarios, Form_Login
+from forms import formulario, form_crea_articulos, Form_Comentarios, Form_Login, Form_Signup
 from flask_wtf import FlaskForm
 from flask_login import LoginManager, UserMixin, login_required, logout_user, login_user, current_user
 
@@ -31,6 +31,8 @@ class User(UserMixin):
     def get_id(self):
          return self.id
 
+
+
 @login_manager.user_loader
 def load_user(user_id):
     conn = sqlite3.connect('database.db')
@@ -42,43 +44,71 @@ def load_user(user_id):
     else:
         return User(int(lu[0]), lu[1], lu[2])
 
+@app.route("/logout")
+def logout():
+	logout_user()
+	return redirect(url_for('index')) 
 
-@app.route("/login", methods=['GET','POST'])
+
+@app.route("/login", methods = ['GET', 'POST'])
 def login():
-    if current_user.is_authenticated:
-        return redirect(url_for('index'))
-    form = Form_Login()
+	if current_user.is_authenticated:
+		return redirect(url_for('index'))
+	form = Form_Login()
 
-    if request.method == "POST":
-        print("Solicitud POST")
-        if form.validate_on_submit():
-            print("Formulario validado")
-            conn = sqlite3.connect('database.db')
-            curs = conn.cursor()
-            curs.execute("SELECT * FROM login_usuario where usuario = (?)",    [form.usuario.data])
-            if curs.fetchone() == None:
-            	flash('No existe usuario')
-            	return render_template('login_form.html', form=form)
+	if request.method == 'POST':
+		print('Solicitud POST')
+		if form.validate_on_submit():
+			print('Formulario validado')
+			conn = sqlite3.connect('database.db')
+			curs = conn.cursor()
+			curs.execute("SELECT * FROM login_usuario WHERE usuario = (?)", [form.usuario.data])
+			if curs.fetchone() == None:
+				flash('No existe usuario')
+				return render_template('login_form.html', form=form)
+
+			else:
+				curs.execute("SELECT * FROM login_usuario WHERE usuario = (?)", [form.usuario.data])
+				user = list(curs.fetchone())
+				print(f"Fetchone de usuario: {curs.fetchone()} || Fetchone de usuario conversido a lista: {user}")
+				Us = load_user(user[0])
+				print(f"US: {Us}")
+
+				if form.usuario.data == Us.usuario and form.password.data == Us.password:
+					print('email y password correctos')
+					login_user(Us, remember = form.remember.data)
+					Umail = list({form.usuario.data})[0].split('@')[0]
+					print('Logged in successfully ' + Umail)
+					redirect(url_for('index'))
 				
-            else:
-            	user = list(curs.fetchone())
-            	print(f"Fetchone de usuario: {curs.fetchone()}  ||  Fetchone de usuario convertido a lista: {user}")
-            	Us = load_user(user[0])
-            	print(f"US: {Us}")
-            	if form.usuario.data == Us.usuario and form.password.data == Us.password:
-                  print("email y password correctos")
-                  login_user(Us, remember=form.remember.data)
-                  Umail = list({form.usuario.data})[0].split('@')[0]
-                  print('Logged in successfully' + Umail)
-                  redirect(url_for('index'))
-            	else:
-                   flash('Contraseña incorrecta')
+				else:
+					flash('Contraseña incorrecta')
+	
+	return render_template("login_form.html", form=form)
 
-    return render_template('login_form.html', form=form)
 
 @app.route("/")
 def index():
 	return render_template("index.html")
+
+
+@app.route("/signup", methods=["GET", "POST"])
+def signup():
+	form = Form_Signup(request.form)
+	if request.method == "POST":
+		usuario= form.usuario.data
+		password= form.password.data
+
+		conn = get_db_connection()
+		conn.execute('INSERT INTO login_usuario (usuario, password) VALUES (?,?)', (usuario, password))
+		conn.commit()
+		conn.close()
+
+		return redirect(url_for('index'))
+	
+	else:
+		return render_template("signup_form.html", form=form)
+
 
 
 @app.route("/contacto", methods=["GET", "POST"])
