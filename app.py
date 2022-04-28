@@ -3,6 +3,8 @@ from flask import Flask, render_template, request, url_for, redirect, abort, fla
 from forms import formulario, form_crea_articulos, Form_Comentarios, Form_Login, Form_Signup
 from flask_wtf import FlaskForm
 from flask_login import LoginManager, UserMixin, login_required, logout_user, login_user, current_user
+from werkzeug.security import check_password_hash, generate_password_hash
+
 
 app = Flask(__name__)
 app.config['SECRET_KEY'] = 'dev'
@@ -70,16 +72,14 @@ def login():
 			else:
 				curs.execute("SELECT * FROM login_usuario WHERE usuario = (?)", [form.usuario.data])
 				user = list(curs.fetchone())
-				print(f"Fetchone de usuario: {curs.fetchone()} || Fetchone de usuario conversido a lista: {user}")
 				Us = load_user(user[0])
 				print(f"US: {Us}")
-
-				if form.usuario.data == Us.usuario and form.password.data == Us.password:
+				if form.usuario.data == Us.usuario and check_password_hash(Us.password, form.password.data):
 					print('email y password correctos')
 					login_user(Us, remember = form.remember.data)
 					Umail = list({form.usuario.data})[0].split('@')[0]
 					print('Logged in successfully ' + Umail)
-					redirect(url_for('index'))
+					return redirect(url_for('index'))
 				
 				else:
 					flash('Contraseña incorrecta')
@@ -97,10 +97,11 @@ def signup():
 	form = Form_Signup(request.form)
 	if request.method == "POST":
 		usuario= form.usuario.data
-		password= form.password.data
+		password = form.password.data
+		pass_crypt = generate_password_hash(password, 'sha256')
 
 		conn = get_db_connection()
-		conn.execute('INSERT INTO login_usuario (usuario, password) VALUES (?,?)', (usuario, password))
+		conn.execute('INSERT INTO login_usuario (usuario, password) VALUES (?,?)', (usuario, pass_crypt))
 		conn.commit()
 		conn.close()
 
